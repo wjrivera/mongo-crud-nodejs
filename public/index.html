@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mongo CRUD</title>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <style>
+        body { margin: 40px }
+    </style>
+</head>
+<body>
+<h1>Trace America Mongo CRUD Operations</h1>
+<h2>CRUD is for Create, Read, Update, Delete</h2>
+
+<hr>
+<h2>Create - Add users and links</h2>
+<div>
+    <!-- Form to get all users.  The form method is post so when you hit submit, it will send the name and url as req.body -->
+    <form action="/post-user" method="post">
+        <label for="name">New Name:</label>
+        <input type="text" id="name" name="name">
+        <label for="url">New URL:</label>
+        <input type="text" width="40%" id="url" name="url">
+        <!-- Submit button -->
+        <button type="submit">Add</button>
+    </form>    
+</div>   
+<hr>
+<h2>Update - Change user's links</h2>
+<div>
+    <!-- Form to get all users.  The form method is post so when you hit submit, it will send the name and url as req.body -->
+    <form action="/update-user" method="post">
+        <label for="name">Existing Name:</label>
+        <input type="text" id="name" name="name">
+        <label for="url">New URL:</label>
+        <input type="text" width="40%" id="url" name="url">
+        <!-- Submit button -->
+        <button type="submit">Update</button>
+    </form>    
+</div>   
+<hr>
+<h2>Delete - Remove Users</h2>
+<div>
+    <!-- Form to remove a user.  The form method is post so when you hit submit, it will send the name as req.body -->
+    <form action="/delete-user" method="post">
+        <label for="name">Name to remove:</label>
+        <input type="text" id="name" name="name">
+        <!-- Submit button -->
+        <button type="submit">Remove</button>
+    </form>    
+    </div>
+<hr>
+<h2>Read - Get Users and Links</h2>
+
+<!-- The list of users will be populated here from the function getUsers() below -->
+<div id="results"></div>
+
+<!-- An extra refresh button, really is unnecessary, but useful to know when creating functions on html -->
+<div>
+    <button onclick="getUsers()">Refresh</button>
+</div> 
+<script>
+
+    //Get users.
+    function getUsers(){
+        var container = document.getElementById('results');
+
+        fetch('/get-user', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => response.json())
+        .then(data => {
+            if (Array.isArray(data)) {
+                data.forEach((item, index) => {
+                    var thePre = document.createElement('pre');
+                    thePre.id = `pre_${item._id ? item._id : index}`;
+                    thePre.textContent = JSON.stringify(item, null, 2);
+                    thePre.style.width = "100%";
+
+                    container.appendChild(thePre);
+                })
+            }
+        }).catch(err => {
+            thePre.appendChild(err);
+        })
+    };
+
+    //Run the getUsers function when the page loads
+    document.addEventListener("DOMContentLoaded", function(){
+        getUsers();
+    });
+
+    </script>
+</body>
+</html>
